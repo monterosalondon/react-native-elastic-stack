@@ -51,7 +51,7 @@ onPanResponderRelease: PropTypes.func,
 | `items` | `array` | `[]` | Array of data for the items to be rendered. |
 | `onSwiped` | `func` | `(itemIndex) => {}` | Function to be called when a item is swiped. |
 | `infinite` | `bool` | `false` | Keep swiping indefinitely. |
-| `distDrag` | `number` | `70` | if the user stops dragging the image in a area that does not exceed for either x or y then the image goes back to the stack. |
+| `distDrag` | `number` | `70` | If the user stops dragging the image in a area that does not exceed for either x or y then the image goes back to the stack. |
 | `onXChange` | `func` | `() => {)` | Function to be called when `x` of current item changed. |
 | `onYChange` | `func` | `() => {}` | Function to be called when `y` of current item changed |
 | `itemWidth` | `number` | `Dimensions.get('window').width * 0.8` | This is the width of the item. |
