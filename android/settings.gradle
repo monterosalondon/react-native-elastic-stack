@@ -1,0 +1,3 @@
+rootProject.name = 'ElasticStack'
+
+include ':app'
