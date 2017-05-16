@@ -4,7 +4,7 @@ import { storiesOf, action } from '@kadira/react-native-storybook';
 
 import ElasticStack from '../../src';
 
-import Card from './Card';
+import Card from './Card/';
 import Wrapper from './Wrapper';
 
 const cardWidth = 250;
