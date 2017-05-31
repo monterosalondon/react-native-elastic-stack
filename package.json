@@ -1,10 +1,10 @@
 {
-  "name": "react-native-elastic-stack",
+  "name": "@monterosa/react-native-elastic-stack",
   "version": "1.0.1",
   "description": "Elastic stack for React Native",
   "repository": {
     "type": "git",
-    "url": "https://github.com/z4o4z/react-native-elastic-stack.git"
+    "url": "https://github.com/monterosalondon/react-native-elastic-stack.git"
   },
   "license": "MIT",
   "main": "src/index.js",
@@ -18,6 +18,11 @@
     "storybook-ios": "storybook start -p 7007 -h 10.94.4.147"
   },
   "dependencies": {},
+  "author": {
+    "name": "Monterosa Productions Ltd",
+    "email": "hello@monterosa.co",
+    "url": "http://monterosa.co/"
+  },
   "devDependencies": {
     "@kadira/react-native-storybook": "^2.0.0",
     "babel-eslint": "^7.2.2",

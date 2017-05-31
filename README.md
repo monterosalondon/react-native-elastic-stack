@@ -1,4 +1,4 @@
-[![](https://img.shields.io/npm/dm/react-native-elastic-stack.svg?style=flat-square)](https://www.npmjs.com/package/react-native-elastic-stack)
+[![](https://img.shields.io/npm/dm/@monterosa/react-native-elastic-stack.svg?style=flat-square)](https://www.npmjs.com/package/@monterosa/react-native-elastic-stack)
 
 # react-native-elastic-stack
 
@@ -7,7 +7,7 @@ React Native component that implement [elastic stack effect](https://tympanus.ne
 ## Installation
 
 ```
-$ npm install react-native-elastic-stack --save
+$ npm install @monterosa/react-native-elastic-stack --save
 ```
 
 ## Demo
@@ -17,7 +17,7 @@ $ npm install react-native-elastic-stack --save
 ## Basic Usage
 
 ```js
-import ParallaxScroll from 'react-native-elastic-stack';
+import ParallaxScroll from '@monterosa/react-native-elastic-stack';
 
 // Inside of a component's render() method:
 render() {
