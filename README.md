@@ -2,7 +2,7 @@
 
 # react-native-elastic-stack
 
-React Native component that implement [elastic stack effect](https://tympanus.net/Development/ElasticStack/)
+React Native component that implements [elastic stack effect](https://tympanus.net/Development/ElasticStack/)
 
 ## Installation
 
@@ -74,6 +74,6 @@ onPanResponderRelease: PropTypes.func,
 
 ## Contributing
 
-I welcome contributions! Please open an issues if you have any feature ideas
+I welcome contributions! Please open an issue if you have any feature ideas
 or find any bugs. I also accept pull requests with open arms. I will
 go over the issues when I have time. :)
