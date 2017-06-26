@@ -60,29 +60,31 @@ export default class ElasticStack extends Component {
     onPanResponderRelease: emptyFunc,
   };
 
+  pan = new Animated.ValueXY();
+  scale = new Animated.Value(0);
+  opacity = new Animated.Value(0);
+  panSwiping = new Animated.ValueXY();
+  isStackEnded = false;
+
   constructor(props) {
     super(props);
 
     this.state = {
-      pan: new Animated.ValueXY(),
-      scale: new Animated.Value(0),
-      opacity: new Animated.Value(0),
-      panSwiping: new Animated.ValueXY(),
       directions: {
         top: props.directions[0],
         left: props.directions[1],
         bottom: props.directions[2],
         right: props.directions[3],
       },
-      isStackEnded: false,
-      activeItemIndex: props.activeItemIndex,
     };
 
     this.animatedValueX = 0;
     this.animatedValueY = 0;
 
-    this.state.pan.x.addListener(this.onXChange);
-    this.state.pan.y.addListener(this.onYChange);
+    this.activeItemIndex = props.activeItemIndex;
+
+    this.pan.x.addListener(this.onXChange);
+    this.pan.y.addListener(this.onYChange);
 
     this.initPanResponder();
   }
@@ -106,30 +108,43 @@ export default class ElasticStack extends Component {
     );
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      directions: {
+        top: nextProps.directions[0],
+        left: nextProps.directions[1],
+        bottom: nextProps.directions[2],
+        right: nextProps.directions[3],
+      },
+    });
+  }
+
   componentWillUnmount() {
-    this.state.pan.x.removeAllListeners();
-    this.state.pan.y.removeAllListeners();
+    this.pan.x.removeAllListeners();
+    this.pan.y.removeAllListeners();
   }
 
   renderElastickItems() {
     const { items, itemWidth, itemHeight, infinite, renderItem, elastickItemsCount } = this.props;
-    const { isStackEnded, activeItemIndex } = this.state;
     const itemsLength = items.length;
 
-    if (!infinite && isStackEnded) {
+    if (!infinite && this.isStackEnded) {
       return null;
     }
 
     return Array.from({ length: elastickItemsCount }).map((_, i) => {
-      const itemIndex = ElasticStack.calculateNextItemIndex(itemsLength, activeItemIndex + (i - 1));
+      const itemIndex = ElasticStack.calculateNextItemIndex(
+        itemsLength,
+        this.activeItemIndex + (i - 1),
+      );
       const itemContent = items[itemIndex];
 
-      if (!itemContent || (!infinite && itemIndex < activeItemIndex)) {
+      if (!itemContent || (!infinite && itemIndex < this.activeItemIndex)) {
         return null;
       }
 
       const swipableItemStyle = this.calculateSwipableItemStyle(i);
-      const handlers = i === 0 ? this.panResponder.panHandlers : {};
+      const handlers = this.panResponder.panHandlers;
 
       return (
         <Animated.View style={swipableItemStyle} {...handlers} key={`${itemIndex}-${i}`}>
@@ -140,7 +155,6 @@ export default class ElasticStack extends Component {
   }
 
   calculateSwipableItemStyle = (itemIndex) => {
-    const { pan, panSwiping } = this.state;
     const {
       distDrag,
       itemWidth,
@@ -152,7 +166,7 @@ export default class ElasticStack extends Component {
     } = this.props;
 
     const isFirst = itemIndex === 0;
-    const currentPan = isFirst ? panSwiping : pan;
+    const currentPan = isFirst ? this.panSwiping : this.pan;
 
     const rotateRange = 8 - 8 / elastickItemsCount * itemIndex;
     const rotate = currentPan.x.interpolate({
@@ -161,13 +175,13 @@ export default class ElasticStack extends Component {
     });
 
     const opacityRange = 1 - reduceOpacityBy * itemIndex;
-    const opacity = this.state.opacity.interpolate({
+    const opacity = this.opacity.interpolate({
       inputRange: [0, 1],
       outputRange: [isFirst ? 1 : opacityRange, isFirst ? 0 : opacityRange + reduceOpacityBy],
     });
 
     const scaleRange = 1 - reduceScaleBy * itemIndex;
-    const scale = this.state.scale.interpolate({
+    const scale = this.scale.interpolate({
       inputRange: [0, 1],
       outputRange: [scaleRange, scaleRange + reduceScaleBy],
     });
@@ -218,14 +232,14 @@ export default class ElasticStack extends Component {
   };
 
   onPanResponderMove = (e, { dx, dy }) => {
-    this.state.pan.setValue({ x: dx, y: dy });
-    this.state.panSwiping.setValue({ x: dx, y: dy });
+    this.pan.setValue({ x: dx, y: dy });
+    this.panSwiping.setValue({ x: dx, y: dy });
   };
 
   onPanResponderGrant = () => {
     this.props.onPanResponderGrant();
 
-    this.state.pan.setValue({ x: 0, y: 0 });
+    this.pan.setValue({ x: 0, y: 0 });
   };
 
   onPanResponderRelease = () => {
@@ -252,12 +266,12 @@ export default class ElasticStack extends Component {
       }
 
       Animated.parallel([
-        Animated.spring(this.state.scale, { toValue: 1 }),
-        Animated.spring(this.state.opacity, { toValue: 1 }),
-        Animated.spring(this.state.pan, {
+        Animated.spring(this.scale, { toValue: 1 }),
+        Animated.spring(this.opacity, { toValue: 1 }),
+        Animated.spring(this.pan, {
           toValue: { x: 0, y: 0 },
         }),
-        Animated.spring(this.state.panSwiping, {
+        Animated.spring(this.panSwiping, {
           toValue: {
             x: this.animatedValueX * 2,
             y: this.animatedValueY * 2,
@@ -268,8 +282,8 @@ export default class ElasticStack extends Component {
       });
     } else {
       Animated.parallel([
-        Animated.spring(this.state.pan, { toValue: { x: 0, y: 0 } }),
-        Animated.spring(this.state.panSwiping, { toValue: { x: 0, y: 0 } }),
+        Animated.spring(this.pan, { toValue: { x: 0, y: 0 } }),
+        Animated.spring(this.panSwiping, { toValue: { x: 0, y: 0 } }),
       ]).start();
     }
   };
@@ -283,9 +297,7 @@ export default class ElasticStack extends Component {
   onStartShouldSetPanResponderCapture = () => true;
 
   incrementItemIndex = (onSwipedToDirection) => {
-    const { activeItemIndex } = this.state;
-
-    let newActiveItemIndex = activeItemIndex + 1;
+    let newActiveItemIndex = this.activeItemIndex + 1;
     let isStackEnded = false;
 
     if (newActiveItemIndex === this.props.items.length) {
@@ -298,29 +310,31 @@ export default class ElasticStack extends Component {
   };
 
   setItemIndex = (activeItemIndex, onSwipedToDirection, isStackEnded) => {
-    this.setState({ onSwipedToDirection, isStackEnded, activeItemIndex }, this.onSwipedCallbacks);
-  };
+    this.isStackEnded = isStackEnded;
+    this.activeItemIndex = activeItemIndex;
 
-  resetPanAndScale = () => {
-    this.state.pan.setValue({ x: 0, y: 0 });
-    this.state.panSwiping.setValue({ x: 0, y: 0 });
-
-    this.state.scale.setValue(0);
-    this.state.opacity.setValue(0);
-  };
-
-  onSwipedCallbacks = () => {
     const prevItemIndex = ElasticStack.calculatePreviousItemIndex(
       this.props.items.length,
-      this.state.activeItemIndex,
+      this.activeItemIndex,
     );
 
     this.props.onSwiped(prevItemIndex);
-    this.state.onSwipedToDirection(prevItemIndex);
 
-    if (this.state.isStackEnded) {
+    onSwipedToDirection(prevItemIndex);
+
+    if (isStackEnded) {
       this.props.onStackEnded();
     }
+
+    this.setState({ activeItemIndex });
+  };
+
+  resetPanAndScale = () => {
+    this.pan.setValue({ x: 0, y: 0 });
+    this.panSwiping.setValue({ x: 0, y: 0 });
+
+    this.scale.setValue(0);
+    this.opacity.setValue(0);
   };
 
   static calculateNextItemIndex = (itemsLength, itemIndex) =>
