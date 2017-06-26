@@ -17,7 +17,7 @@ $ npm install @monterosa/react-native-elastic-stack --save
 ## Basic Usage
 
 ```js
-import ParallaxScroll from '@monterosa/react-native-elastic-stack';
+import ElasticStack from '@monterosa/react-native-elastic-stack';
 
 // Inside of a component's render() method:
 render() {
