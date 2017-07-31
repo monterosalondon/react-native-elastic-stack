@@ -236,13 +236,13 @@ export default class ElasticStack extends Component {
     this.panSwiping.setValue({ x: dx, y: dy });
   };
 
-  onPanResponderGrant = () => {
-    this.props.onPanResponderGrant();
+  onPanResponderGrant = (e, data) => {
+    this.props.onPanResponderGrant(e, data);
 
     this.pan.setValue({ x: 0, y: 0 });
   };
 
-  onPanResponderRelease = () => {
+  onPanResponderRelease = (e, data) => {
     const { onSwipedTop, onSwipedLeft, onSwipedRight, onSwipedBottom, distDrag } = this.props;
     const animatedValueX = this.animatedValueX;
     const animatedValueY = this.animatedValueY;
@@ -252,7 +252,7 @@ export default class ElasticStack extends Component {
     const isSwipingTop = animatedValueY < -distDrag && this.state.directions.top;
     const isSwipingBottom = animatedValueY > distDrag && this.state.directions.bottom;
 
-    this.props.onPanResponderRelease();
+    this.props.onPanResponderRelease(e, data);
 
     if (isSwipingLeft || isSwipingRight || isSwipingTop || isSwipingBottom) {
       let onSwipeDirectionCallback = onSwipedBottom;
