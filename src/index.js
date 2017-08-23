@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { PanResponder, View, Dimensions, Animated } from 'react-native';
 /* eslint-enable import/no-extraneous-dependencies */
@@ -7,7 +7,7 @@ import { PanResponder, View, Dimensions, Animated } from 'react-native';
 const emptyFunc = () => {};
 const window = Dimensions.get('window');
 
-export default class ElasticStack extends Component {
+export default class ElasticStack extends PureComponent {
   static propTypes = {
     style: PropTypes.oneOfType(PropTypes.object),
     items: PropTypes.arrayOf(PropTypes.any).isRequired,
@@ -125,30 +125,32 @@ export default class ElasticStack extends Component {
   }
 
   renderElastickItems() {
-    const { items, itemWidth, itemHeight, infinite, renderItem, elastickItemsCount } = this.props;
-    const itemsLength = items.length;
+    const { items, itemWidth, itemHeight, infinite, renderItem } = this.props;
 
     if (!infinite && this.isStackEnded) {
       return null;
     }
 
-    return Array.from({ length: elastickItemsCount }).map((_, i) => {
-      const itemIndex = ElasticStack.calculateNextItemIndex(
-        itemsLength,
-        this.activeItemIndex + (i - 1),
-      );
-      const itemContent = items[itemIndex];
-
-      if (!itemContent || (!infinite && itemIndex < this.activeItemIndex)) {
+    return items.map((item, i) => {
+      if (!infinite && i < this.activeItemIndex) {
         return null;
       }
 
-      const swipableItemStyle = this.calculateSwipableItemStyle(i);
+      const currentSlidePositionRelativeToActiveSlide = i >= this.activeItemIndex
+        ? i - this.activeItemIndex
+        : this.props.items.length - this.activeItemIndex + i;
+      const swipableItemStyle = this.calculateSwipableItemStyle(
+        currentSlidePositionRelativeToActiveSlide,
+      );
       const handlers = this.panResponder.panHandlers;
 
       return (
-        <Animated.View style={swipableItemStyle} {...handlers} key={`${itemIndex}-${i}`}>
-          {renderItem(itemContent, itemWidth, itemHeight)}
+        <Animated.View
+          key={currentSlidePositionRelativeToActiveSlide}
+          style={swipableItemStyle}
+          {...handlers}
+        >
+          {renderItem(item, itemWidth, itemHeight)}
         </Animated.View>
       );
     });
@@ -165,42 +167,53 @@ export default class ElasticStack extends Component {
       elastickItemsCount,
     } = this.props;
 
-    const isFirst = itemIndex === 0;
-    const currentPan = isFirst ? this.panSwiping : this.pan;
+    const isActive = itemIndex === 0;
+    const currentPan = isActive ? this.panSwiping : this.pan;
+    const isHide = itemIndex > elastickItemsCount;
 
     const rotateRange = 8 - 8 / elastickItemsCount * itemIndex;
-    const rotate = currentPan.x.interpolate({
-      inputRange: [-distDrag, 0, distDrag],
-      outputRange: [`-${rotateRange}deg`, '0deg', `${rotateRange}deg`],
-    });
+    const rotate = isHide
+      ? '0deg'
+      : currentPan.x.interpolate({
+        inputRange: [-distDrag, 0, distDrag],
+        outputRange: [`-${rotateRange}deg`, '0deg', `${rotateRange}deg`],
+      });
 
     const opacityRange = 1 - reduceOpacityBy * itemIndex;
-    const opacity = this.opacity.interpolate({
-      inputRange: [0, 1],
-      outputRange: [isFirst ? 1 : opacityRange, isFirst ? 0 : opacityRange + reduceOpacityBy],
-    });
+    const opacity = isHide
+      ? 0
+      : this.opacity.interpolate({
+        inputRange: [0, 1],
+        outputRange: [isActive ? 1 : opacityRange, isActive ? 0 : opacityRange + reduceOpacityBy],
+      });
 
     const scaleRange = 1 - reduceScaleBy * itemIndex;
-    const scale = this.scale.interpolate({
-      inputRange: [0, 1],
-      outputRange: [scaleRange, scaleRange + reduceScaleBy],
-    });
+    const scale = isHide
+      ? 0
+      : this.scale.interpolate({
+        inputRange: [0, 1],
+        outputRange: [scaleRange, scaleRange + reduceScaleBy],
+      });
 
-    const elRange = isFirst ? 1 : elastickRange;
+    const elRange = isActive ? 1 : elastickRange;
     const translateRange = (1 - 1 / elastickItemsCount * itemIndex) * distDrag * elRange;
-    const translateX = currentPan.x.interpolate({
-      inputRange: [-distDrag, 0, distDrag],
-      outputRange: [-translateRange, 0, translateRange],
-    });
-    const translateY = currentPan.y.interpolate({
-      inputRange: [-distDrag, 0, distDrag],
-      outputRange: [-translateRange, 0, translateRange],
-    });
+    const translateX = isHide
+      ? 0
+      : currentPan.x.interpolate({
+        inputRange: [-distDrag, 0, distDrag],
+        outputRange: [-translateRange, 0, translateRange],
+      });
+    const translateY = isHide
+      ? 0
+      : currentPan.y.interpolate({
+        inputRange: [-distDrag, 0, distDrag],
+        outputRange: [-translateRange, 0, translateRange],
+      });
 
     return {
       width: itemWidth,
       height: itemHeight,
-      zIndex: elastickItemsCount - itemIndex + 1,
+      zIndex: isHide ? -1 : elastickItemsCount - itemIndex + 1,
       position: 'absolute',
       opacity,
       transform: [{ scale }, { rotate }, { translateX }, { translateY }],
@@ -212,9 +225,11 @@ export default class ElasticStack extends Component {
       onPanResponderMove: this.onPanResponderMove,
       onPanResponderGrant: this.onPanResponderGrant,
       onPanResponderRelease: this.onPanResponderRelease,
+      onPanResponderTerminate: this.onPanResponderRelease,
       onMoveShouldSetPanResponder: this.onMoveShouldSetPanResponder,
       onStartShouldSetPanResponder: this.onStartShouldSetPanResponder,
       onPanResponderTerminationRequest: this.onPanResponderTerminationRequest,
+      onMoveShouldSetPanResponderCapture: this.onMoveShouldSetPanResponderCapture,
       onStartShouldSetPanResponderCapture: this.onStartShouldSetPanResponderCapture,
     });
   };
@@ -293,6 +308,8 @@ export default class ElasticStack extends Component {
   onStartShouldSetPanResponder = () => true;
 
   onPanResponderTerminationRequest = () => false;
+
+  onMoveShouldSetPanResponderCapture = () => true;
 
   onStartShouldSetPanResponderCapture = () => true;
 

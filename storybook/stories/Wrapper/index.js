@@ -2,7 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Text, View, Image, Platform, Dimensions, StyleSheet } from 'react-native';
-import ParallaxScroll from 'react-native-parallax-scroll';
+import ParallaxScroll from '@monterosa/react-native-parallax-scroll';
 /* eslint-enable import/no-extraneous-dependencies */
 
 const ANDROID_STATUS_BAR_HEIGHT = 24;
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
 
 const height = window.height - (IS_IOS ? 0 : ANDROID_STATUS_BAR_HEIGHT);
 
-export default function SwipeCard({ children, headerImage, parallaxHeight }) {
+export default function Wrapper({ children, headerImage, parallaxHeight }) {
   const contentContainerStyle = {
     minHeight: height - parallaxHeight,
   };
@@ -66,7 +66,7 @@ export default function SwipeCard({ children, headerImage, parallaxHeight }) {
   );
 }
 
-SwipeCard.propTypes = {
+Wrapper.propTypes = {
   children: PropTypes.element.isRequired,
   headerImage: PropTypes.string.isRequired,
   parallaxHeight: PropTypes.number.isRequired,

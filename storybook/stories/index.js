@@ -10,6 +10,12 @@ import Wrapper from './Wrapper';
 const cardWidth = 250;
 const cardHeight = 300;
 
+const renderCard = url => <Card image={url} width={cardWidth} height={cardHeight} />;
+
+const items = Array.from({ length: 10 }).map(
+  (_, i) => `http://lorempixel.com/640/480/city/?item=${i}`,
+);
+
 storiesOf('ParallaxScroll', module)
   .add('Base', () => (
     <Wrapper
@@ -17,12 +23,16 @@ storiesOf('ParallaxScroll', module)
       parallaxHeight={45}
     >
       <ElasticStack
-        items={Array.from({ length: 5 }).map(
-          (_, i) => `http://lorempixel.com/640/480/city/?item=${i}`,
-        )}
+        style={{ alignItems: 'center', justifyContent: 'center' }}
+        items={items}
         itemWidth={cardWidth}
         itemHeight={cardHeight}
-        renderItem={url => <Card image={url} width={cardWidth} height={cardHeight} />}
+        onSwipedTop={action('onSwipedTop')}
+        onSwipedLeft={action('onSwipedLeft')}
+        onStackEnded={action('onStackEnded')}
+        onSwipedRight={action('onSwipedRight')}
+        onSwipedBottom={action('onSwipedBottom')}
+        renderItem={renderCard}
       />
     </Wrapper>
   ))
@@ -38,7 +48,7 @@ storiesOf('ParallaxScroll', module)
         infinite
         itemWidth={cardWidth}
         itemHeight={cardHeight}
-        renderItem={url => <Card image={url} width={cardWidth} height={cardHeight} />}
+        renderItem={renderCard}
       />
     </Wrapper>
   ))
@@ -48,13 +58,11 @@ storiesOf('ParallaxScroll', module)
       parallaxHeight={45}
     >
       <ElasticStack
-        items={Array.from({ length: 5 }).map(
-          (_, i) => `http://lorempixel.com/640/480/city/?item=${i}`,
-        )}
+        items={items}
         distDrag={200}
         itemWidth={cardWidth}
         itemHeight={cardHeight}
-        renderItem={url => <Card image={url} width={cardWidth} height={cardHeight} />}
+        renderItem={renderCard}
       />
     </Wrapper>
   ))
@@ -64,12 +72,10 @@ storiesOf('ParallaxScroll', module)
       parallaxHeight={45}
     >
       <ElasticStack
-        items={Array.from({ length: 5 }).map(
-          (_, i) => `http://lorempixel.com/640/480/city/?item=${i}`,
-        )}
+        items={items}
         itemWidth={cardWidth}
         itemHeight={cardHeight}
-        renderItem={url => <Card image={url} width={cardWidth} height={cardHeight} />}
+        renderItem={renderCard}
         directions={[false, true, false, true]}
       />
     </Wrapper>
@@ -80,12 +86,10 @@ storiesOf('ParallaxScroll', module)
       parallaxHeight={45}
     >
       <ElasticStack
-        items={Array.from({ length: 5 }).map(
-          (_, i) => `http://lorempixel.com/640/480/city/?item=${i}`,
-        )}
+        items={items}
         itemWidth={cardWidth}
         itemHeight={cardHeight}
-        renderItem={url => <Card image={url} width={cardWidth} height={cardHeight} />}
+        renderItem={renderCard}
         directions={[true, false, true, false]}
       />
     </Wrapper>
@@ -96,12 +100,10 @@ storiesOf('ParallaxScroll', module)
       parallaxHeight={45}
     >
       <ElasticStack
-        items={Array.from({ length: 5 }).map(
-          (_, i) => `http://lorempixel.com/640/480/city/?item=${i}`,
-        )}
+        items={items}
         itemWidth={cardWidth}
         itemHeight={cardHeight}
-        renderItem={url => <Card image={url} width={cardWidth} height={cardHeight} />}
+        renderItem={renderCard}
         reduceScaleBy={0.1}
       />
     </Wrapper>
@@ -112,12 +114,10 @@ storiesOf('ParallaxScroll', module)
       parallaxHeight={45}
     >
       <ElasticStack
-        items={Array.from({ length: 5 }).map(
-          (_, i) => `http://lorempixel.com/640/480/city/?item=${i}`,
-        )}
+        items={items}
         itemWidth={cardWidth}
         itemHeight={cardHeight}
-        renderItem={url => <Card image={url} width={cardWidth} height={cardHeight} />}
+        renderItem={renderCard}
         elastickRange={0.8}
       />
     </Wrapper>
@@ -128,12 +128,10 @@ storiesOf('ParallaxScroll', module)
       parallaxHeight={45}
     >
       <ElasticStack
-        items={Array.from({ length: 5 }).map(
-          (_, i) => `http://lorempixel.com/640/480/city/?item=${i}`,
-        )}
+        items={items}
         itemWidth={cardWidth}
         itemHeight={cardHeight}
-        renderItem={url => <Card image={url} width={cardWidth} height={cardHeight} />}
+        renderItem={renderCard}
         reduceOpacityBy={0.3}
       />
     </Wrapper>
@@ -144,12 +142,10 @@ storiesOf('ParallaxScroll', module)
       parallaxHeight={45}
     >
       <ElasticStack
-        items={Array.from({ length: 5 }).map(
-          (_, i) => `http://lorempixel.com/640/480/city/?item=${i}`,
-        )}
+        items={items}
         itemWidth={cardWidth}
         itemHeight={cardHeight}
-        renderItem={url => <Card image={url} width={cardWidth} height={cardHeight} />}
+        renderItem={renderCard}
         activeItemIndex={3}
       />
     </Wrapper>
@@ -160,12 +156,10 @@ storiesOf('ParallaxScroll', module)
       parallaxHeight={45}
     >
       <ElasticStack
-        items={Array.from({ length: 5 }).map(
-          (_, i) => `http://lorempixel.com/640/480/city/?item=${i}`,
-        )}
+        items={items}
         itemWidth={cardWidth}
         itemHeight={cardHeight}
-        renderItem={url => <Card image={url} width={cardWidth} height={cardHeight} />}
+        renderItem={renderCard}
         elastickRange={0.9}
         elastickItemsCount={5}
       />
@@ -177,13 +171,11 @@ storiesOf('ParallaxScroll', module)
       parallaxHeight={45}
     >
       <ElasticStack
-        items={Array.from({ length: 5 }).map(
-          (_, i) => `http://lorempixel.com/640/480/city/?item=${i}`,
-        )}
+        items={items}
         onSwiped={action('onSwiped')}
         itemWidth={cardWidth}
         itemHeight={cardHeight}
-        renderItem={url => <Card image={url} width={cardWidth} height={cardHeight} />}
+        renderItem={renderCard}
         onSwipedTop={action('onSwipedTop')}
         onSwipedLeft={action('onSwipedLeft')}
         onStackEnded={action('onStackEnded')}
@@ -200,12 +192,10 @@ storiesOf('ParallaxScroll', module)
       parallaxHeight={250}
     >
       <ElasticStack
-        items={Array.from({ length: 5 }).map(
-          (_, i) => `http://lorempixel.com/640/480/city/?item=${i}`,
-        )}
+        items={items}
         itemWidth={cardWidth}
         itemHeight={cardHeight}
-        renderItem={url => <Card image={url} width={cardWidth} height={cardHeight} />}
+        renderItem={renderCard}
       />
     </Wrapper>
   ))
@@ -215,12 +205,10 @@ storiesOf('ParallaxScroll', module)
       parallaxHeight={450}
     >
       <ElasticStack
-        items={Array.from({ length: 5 }).map(
-          (_, i) => `http://lorempixel.com/640/480/city/?item=${i}`,
-        )}
+        items={items}
         itemWidth={cardWidth}
         itemHeight={cardHeight}
-        renderItem={url => <Card image={url} width={cardWidth} height={cardHeight} />}
+        renderItem={renderCard}
       />
     </Wrapper>
   ));
