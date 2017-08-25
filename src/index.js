@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { PanResponder, View, Dimensions, Animated } from 'react-native';
 /* eslint-enable import/no-extraneous-dependencies */
@@ -7,7 +7,7 @@ import { PanResponder, View, Dimensions, Animated } from 'react-native';
 const emptyFunc = () => {};
 const window = Dimensions.get('window');
 
-export default class ElasticStack extends PureComponent {
+export default class ElasticStack extends Component {
   static propTypes = {
     style: PropTypes.oneOfType(PropTypes.object),
     items: PropTypes.arrayOf(PropTypes.any).isRequired,
@@ -31,6 +31,7 @@ export default class ElasticStack extends PureComponent {
     reduceOpacityBy: PropTypes.number,
     activeItemIndex: PropTypes.number,
     elastickItemsCount: PropTypes.number,
+    itemBackgroundColor: PropTypes.string,
     onPanResponderGrant: PropTypes.func,
     onPanResponderRelease: PropTypes.func,
   };
@@ -57,6 +58,7 @@ export default class ElasticStack extends PureComponent {
     activeItemIndex: 0,
     elastickItemsCount: 3,
     onPanResponderGrant: emptyFunc,
+    itemBackgroundColor: 'rgba(0,0,0,0)',
     onPanResponderRelease: emptyFunc,
   };
 
@@ -125,32 +127,30 @@ export default class ElasticStack extends PureComponent {
   }
 
   renderElastickItems() {
-    const { items, itemWidth, itemHeight, infinite, renderItem } = this.props;
+    const { items, itemWidth, itemHeight, infinite, renderItem, elastickItemsCount } = this.props;
+    const itemsLength = items.length;
 
     if (!infinite && this.isStackEnded) {
       return null;
     }
 
-    return items.map((item, i) => {
-      if (!infinite && i < this.activeItemIndex) {
+    return Array.from({ length: elastickItemsCount }).map((_, i) => {
+      const itemIndex = ElasticStack.calculateNextItemIndex(
+        itemsLength,
+        this.activeItemIndex + (i - 1),
+      );
+      const itemContent = items[itemIndex];
+
+      if (!itemContent || (!infinite && itemIndex < this.activeItemIndex)) {
         return null;
       }
 
-      const currentSlidePositionRelativeToActiveSlide = i >= this.activeItemIndex
-        ? i - this.activeItemIndex
-        : this.props.items.length - this.activeItemIndex + i;
-      const swipableItemStyle = this.calculateSwipableItemStyle(
-        currentSlidePositionRelativeToActiveSlide,
-      );
+      const swipableItemStyle = this.calculateSwipableItemStyle(i);
       const handlers = this.panResponder.panHandlers;
 
       return (
-        <Animated.View
-          key={currentSlidePositionRelativeToActiveSlide}
-          style={swipableItemStyle}
-          {...handlers}
-        >
-          {renderItem(item, itemWidth, itemHeight)}
+        <Animated.View style={swipableItemStyle} {...handlers} key={`${itemIndex}-${i}`}>
+          {renderItem(itemContent, itemWidth, itemHeight)}
         </Animated.View>
       );
     });
@@ -167,54 +167,44 @@ export default class ElasticStack extends PureComponent {
       elastickItemsCount,
     } = this.props;
 
-    const isActive = itemIndex === 0;
-    const currentPan = isActive ? this.panSwiping : this.pan;
-    const isHide = itemIndex > elastickItemsCount;
+    const isFirst = itemIndex === 0;
+    const currentPan = isFirst ? this.panSwiping : this.pan;
 
     const rotateRange = 8 - 8 / elastickItemsCount * itemIndex;
-    const rotate = isHide
-      ? '0deg'
-      : currentPan.x.interpolate({
-        inputRange: [-distDrag, 0, distDrag],
-        outputRange: [`-${rotateRange}deg`, '0deg', `${rotateRange}deg`],
-      });
+    const rotate = currentPan.x.interpolate({
+      inputRange: [-distDrag, 0, distDrag],
+      outputRange: [`-${rotateRange}deg`, '0deg', `${rotateRange}deg`],
+    });
 
     const opacityRange = 1 - reduceOpacityBy * itemIndex;
-    const opacity = isHide
-      ? 0
-      : this.opacity.interpolate({
-        inputRange: [0, 1],
-        outputRange: [isActive ? 1 : opacityRange, isActive ? 0 : opacityRange + reduceOpacityBy],
-      });
+    const opacity = this.opacity.interpolate({
+      inputRange: [0, 1],
+      outputRange: [isFirst ? 1 : opacityRange, isFirst ? 0 : opacityRange + reduceOpacityBy],
+    });
 
     const scaleRange = 1 - reduceScaleBy * itemIndex;
-    const scale = isHide
-      ? 0
-      : this.scale.interpolate({
-        inputRange: [0, 1],
-        outputRange: [scaleRange, scaleRange + reduceScaleBy],
-      });
+    const scale = this.scale.interpolate({
+      inputRange: [0, 1],
+      outputRange: [scaleRange, scaleRange + reduceScaleBy],
+    });
 
-    const elRange = isActive ? 1 : elastickRange;
+    const elRange = isFirst ? 1 : elastickRange;
     const translateRange = (1 - 1 / elastickItemsCount * itemIndex) * distDrag * elRange;
-    const translateX = isHide
-      ? 0
-      : currentPan.x.interpolate({
-        inputRange: [-distDrag, 0, distDrag],
-        outputRange: [-translateRange, 0, translateRange],
-      });
-    const translateY = isHide
-      ? 0
-      : currentPan.y.interpolate({
-        inputRange: [-distDrag, 0, distDrag],
-        outputRange: [-translateRange, 0, translateRange],
-      });
+    const translateX = currentPan.x.interpolate({
+      inputRange: [-distDrag, 0, distDrag],
+      outputRange: [-translateRange, 0, translateRange],
+    });
+    const translateY = currentPan.y.interpolate({
+      inputRange: [-distDrag, 0, distDrag],
+      outputRange: [-translateRange, 0, translateRange],
+    });
 
     return {
       width: itemWidth,
       height: itemHeight,
-      zIndex: isHide ? -1 : elastickItemsCount - itemIndex + 1,
+      zIndex: elastickItemsCount - itemIndex + 1,
       position: 'absolute',
+      backgroundColor: this.props.itemBackgroundColor,
       opacity,
       transform: [{ scale }, { rotate }, { translateX }, { translateY }],
     };
