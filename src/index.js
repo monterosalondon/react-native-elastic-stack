@@ -149,7 +149,7 @@ export default class ElasticStack extends Component {
       const handlers = this.panResponder.panHandlers;
 
       return (
-        <Animated.View style={swipableItemStyle} {...handlers} key={`${itemIndex}-${i}`}>
+        <Animated.View style={swipableItemStyle} {...handlers} key={`${itemIndex}`}>
           {renderItem(itemContent, itemWidth, itemHeight)}
         </Animated.View>
       );
