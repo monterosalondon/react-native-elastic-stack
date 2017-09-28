@@ -12,7 +12,7 @@ $ npm install @monterosa/react-native-elastic-stack --save
 
 ## Demo
 
-| ![](./demo/demo-1.gif) | ![](./demo/demo-2.gif) | ![](./demo/demo-3.gif) | ![](./demo/demo-4.gif) |
+| ![](./demo/ios-demo-1.gif) | ![](./demo/ios-demo-2.gif) | ![](./demo/ios-demo-3.gif) | ![](./demo/ios-demo-4.gif) |
 
 ## Basic Usage
 

@@ -7,7 +7,7 @@ import { View, Image, StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
   wrapper: {
     borderRadius: 5,
-    backgroundColor: '#fff',
+    backgroundColor: '#515151',
   },
   image: {
     borderRadius: 5,

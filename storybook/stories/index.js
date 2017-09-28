@@ -13,13 +13,14 @@ const cardHeight = 300;
 const renderCard = url => <Card image={url} width={cardWidth} height={cardHeight} />;
 
 const items = Array.from({ length: 10 }).map(
-  (_, i) => `http://lorempixel.com/640/480/city/?item=${i}`,
+  (_, i) => `https://lorempixel.com/640/480/nightlife/?item=${i}`,
 );
 
-storiesOf('ParallaxScroll', module)
+storiesOf('ElasticStack', module)
   .add('Base', () => (
     <Wrapper
-      headerImage={`http://lorempixel.com/640/480/city/?time${Date.now()}`}
+      headerImage={`https://lorempixel.com/640/480/nightlife/?time${Date.now()}`}
+      disableScroll
       parallaxHeight={45}
     >
       <ElasticStack
@@ -38,12 +39,13 @@ storiesOf('ParallaxScroll', module)
   ))
   .add('Infinite', () => (
     <Wrapper
-      headerImage={`http://lorempixel.com/640/480/city/?time${Date.now()}`}
+      headerImage={`https://lorempixel.com/640/480/nightlife/?time${Date.now()}`}
+      disableScroll
       parallaxHeight={45}
     >
       <ElasticStack
         items={Array.from({ length: 3 }).map(
-          (_, i) => `http://lorempixel.com/640/480/city/?item=${i}`,
+          (_, i) => `https://lorempixel.com/640/480/nightlife/?item=${i}`,
         )}
         infinite
         itemWidth={cardWidth}
@@ -54,7 +56,8 @@ storiesOf('ParallaxScroll', module)
   ))
   .add('Dist of drag is 200', () => (
     <Wrapper
-      headerImage={`http://lorempixel.com/640/480/city/?time${Date.now()}`}
+      headerImage={`https://lorempixel.com/640/480/nightlife/?time${Date.now()}`}
+      disableScroll
       parallaxHeight={45}
     >
       <ElasticStack
@@ -68,7 +71,8 @@ storiesOf('ParallaxScroll', module)
   ))
   .add('Only horizontal swipes', () => (
     <Wrapper
-      headerImage={`http://lorempixel.com/640/480/city/?time${Date.now()}`}
+      headerImage={`https://lorempixel.com/640/480/nightlife/?time${Date.now()}`}
+      disableScroll
       parallaxHeight={45}
     >
       <ElasticStack
@@ -82,7 +86,8 @@ storiesOf('ParallaxScroll', module)
   ))
   .add('Only vertical swipes', () => (
     <Wrapper
-      headerImage={`http://lorempixel.com/640/480/city/?time${Date.now()}`}
+      headerImage={`https://lorempixel.com/640/480/nightlife/?time${Date.now()}`}
+      disableScroll
       parallaxHeight={45}
     >
       <ElasticStack
@@ -96,7 +101,8 @@ storiesOf('ParallaxScroll', module)
   ))
   .add('Reduce scale by 0.1', () => (
     <Wrapper
-      headerImage={`http://lorempixel.com/640/480/city/?time${Date.now()}`}
+      headerImage={`https://lorempixel.com/640/480/nightlife/?time${Date.now()}`}
+      disableScroll
       parallaxHeight={45}
     >
       <ElasticStack
@@ -110,7 +116,8 @@ storiesOf('ParallaxScroll', module)
   ))
   .add('Elastick range is 0.8', () => (
     <Wrapper
-      headerImage={`http://lorempixel.com/640/480/city/?time${Date.now()}`}
+      headerImage={`https://lorempixel.com/640/480/nightlife/?time${Date.now()}`}
+      disableScroll
       parallaxHeight={45}
     >
       <ElasticStack
@@ -122,9 +129,10 @@ storiesOf('ParallaxScroll', module)
       />
     </Wrapper>
   ))
-  .add('Reduce opacity by 0.3', () => (
+  .add('Reduce opanightlife by 0.3', () => (
     <Wrapper
-      headerImage={`http://lorempixel.com/640/480/city/?time${Date.now()}`}
+      headerImage={`https://lorempixel.com/640/480/nightlife/?time${Date.now()}`}
+      disableScroll
       parallaxHeight={45}
     >
       <ElasticStack
@@ -132,13 +140,14 @@ storiesOf('ParallaxScroll', module)
         itemWidth={cardWidth}
         itemHeight={cardHeight}
         renderItem={renderCard}
-        reduceOpacityBy={0.3}
+        reduceOpanightlifeBy={0.3}
       />
     </Wrapper>
   ))
   .add('Active item index is 3', () => (
     <Wrapper
-      headerImage={`http://lorempixel.com/640/480/city/?time${Date.now()}`}
+      headerImage={`https://lorempixel.com/640/480/nightlife/?time${Date.now()}`}
+      disableScroll
       parallaxHeight={45}
     >
       <ElasticStack
@@ -152,7 +161,8 @@ storiesOf('ParallaxScroll', module)
   ))
   .add('Elastick items count is 5', () => (
     <Wrapper
-      headerImage={`http://lorempixel.com/640/480/city/?time${Date.now()}`}
+      headerImage={`https://lorempixel.com/640/480/nightlife/?time${Date.now()}`}
+      disableScroll
       parallaxHeight={45}
     >
       <ElasticStack
@@ -167,7 +177,8 @@ storiesOf('ParallaxScroll', module)
   ))
   .add('With handlers', () => (
     <Wrapper
-      headerImage={`http://lorempixel.com/640/480/city/?time${Date.now()}`}
+      headerImage={`https://lorempixel.com/640/480/nightlife/?time${Date.now()}`}
+      disableScroll
       parallaxHeight={45}
     >
       <ElasticStack
@@ -188,7 +199,8 @@ storiesOf('ParallaxScroll', module)
   ))
   .add('With big header', () => (
     <Wrapper
-      headerImage={`http://lorempixel.com/640/480/city/?time${Date.now()}`}
+      headerImage={`https://lorempixel.com/640/480/nightlife/?time${Date.now()}`}
+      disableScroll
       parallaxHeight={250}
     >
       <ElasticStack
@@ -201,8 +213,9 @@ storiesOf('ParallaxScroll', module)
   ))
   .add('With scroll', () => (
     <Wrapper
-      headerImage={`http://lorempixel.com/640/480/city/?time${Date.now()}`}
+      headerImage={`https://lorempixel.com/640/480/nightlife/?time${Date.now()}`}
       parallaxHeight={450}
+      withPaddingBottom
     >
       <ElasticStack
         items={items}
