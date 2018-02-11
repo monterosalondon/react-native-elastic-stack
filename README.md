@@ -78,7 +78,7 @@ onPanResponderRelease: PropTypes.func,
 
 All changes [here](./CHANGELOG.md)
 
-### 1.5.2 - 2018-02-11
+### 1.3.0 - 2018-02-11
 
 #### Added
 
