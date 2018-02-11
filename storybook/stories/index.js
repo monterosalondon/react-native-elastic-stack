@@ -7,8 +7,8 @@ import ElasticStack from '../../src';
 import Card from './Card/';
 import Wrapper from './Wrapper';
 
-const cardWidth = 250;
-const cardHeight = 300;
+const cardWidth = 300;
+const cardHeight = 400;
 
 const renderCard = url => <Card image={url} width={cardWidth} height={cardHeight} />;
 

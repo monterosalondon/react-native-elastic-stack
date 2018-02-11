@@ -61,16 +61,33 @@ onPanResponderRelease: PropTypes.func,
 | `onSwipedTop` | `func` | `(itemIndex) => {}` | Function to be called when a item is swiped top. |
 | `onSwipedLeft` | `func` | `(itemIndex) => {}` | Function to be called when a item is swiped left. |
 | `onStackEnded` | `func` | `() => {}` | Function to be called when stack is ended. |
-| `reduceScaleBy` | `number` | `0.05` | The value by which the next item should decrease. |
+| `rotateDegree` | `number` | `10` | The value by which items should rotate. |
+| `reduceScaleBy` | `number` | `0.05` | The value by which the next items should decrease. |
 | `onSwipedRight` | `func` | `(itemIndex) => {}` | Function to be called when a item is swiped right. |
-| `elastickRange` | `number` | `0.5` | The value of the elastic of items. |
+| `reduceDegreeBy` | `number` | `0.65` | The value by which the next items should reduce rotate. |
 | `onSwipedBottom` | `func` | `(itemIndex) => {}` | Function to be called when a item is swiped bottom. |
 | `reduceOpacityBy` | `number` | `0.2` | The value by which the next item should be more transparent. |
 | `activeItemIndex` | `number` | `0` | Default item index. |
+| `stackEffectHeight` | `number` | `5` | The height of the stack effect. |
+| `reduceTransformBy` | `number` | `0.7` | The value by which the next items should reduce transforms. |
 | `elastickItemsCount` | `number` | `3` | Count of items rendered at the same time. |
 | `onPanResponderGrant` | `func` | `() => {}` | |
 | `onPanResponderRelease` | `func` | `() => {}` | |
 
+## Latest changelog
+
+All changes [here](./CHANGELOG.md)
+
+### 1.5.2 - 2018-02-11
+
+#### Added
+
+* stack effect, now you can see the next curds
+* new props: `rotateDegree`, `reduceDegreeBy`, `stackEffectHeight`
+
+#### Changed
+
+* the props `elastickRange` changed to `reduceTransformBy`
 
 ## Contributing
 

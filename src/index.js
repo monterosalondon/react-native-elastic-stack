@@ -4,8 +4,9 @@ import PropTypes from 'prop-types';
 import { PanResponder, View, Dimensions, Animated } from 'react-native';
 /* eslint-enable import/no-extraneous-dependencies */
 
-const emptyFunc = () => {};
 const window = Dimensions.get('window');
+const emptyFunc = () => {};
+const TRANSFORM_RANGE = 100;
 
 export default class ElasticStack extends Component {
   static propTypes = {
@@ -22,14 +23,17 @@ export default class ElasticStack extends Component {
     directions: PropTypes.arrayOf(PropTypes.bool),
     renderItem: PropTypes.func.isRequired,
     onSwipedTop: PropTypes.func,
+    rotateDegree: PropTypes.number,
     onSwipedLeft: PropTypes.func,
     onStackEnded: PropTypes.func,
     reduceScaleBy: PropTypes.number,
     onSwipedRight: PropTypes.func,
-    elastickRange: PropTypes.number,
     onSwipedBottom: PropTypes.func,
+    reduceDegreeBy: PropTypes.number,
+    stackEffectHeight: PropTypes.number,
     reduceOpacityBy: PropTypes.number,
     activeItemIndex: PropTypes.number,
+    reduceTransformBy: PropTypes.number,
     elastickItemsCount: PropTypes.number,
     itemBackgroundColor: PropTypes.string,
     onPanResponderGrant: PropTypes.func,
@@ -48,14 +52,17 @@ export default class ElasticStack extends Component {
     itemHeight: window.height * 0.8,
     directions: [true, true, true, true],
     onSwipedTop: emptyFunc,
+    rotateDegree: 10,
     onSwipedLeft: emptyFunc,
-    reduceScaleBy: 0.05,
     onStackEnded: emptyFunc,
+    reduceScaleBy: 0.05,
     onSwipedRight: emptyFunc,
-    elastickRange: 0.5,
     onSwipedBottom: emptyFunc,
+    reduceDegreeBy: 0.65,
     reduceOpacityBy: 0.2,
     activeItemIndex: 0,
+    reduceTransformBy: 0.7,
+    stackEffectHeight: 5,
     elastickItemsCount: 3,
     onPanResponderGrant: emptyFunc,
     itemBackgroundColor: 'rgba(0,0,0,0)',
@@ -158,22 +165,24 @@ export default class ElasticStack extends Component {
 
   calculateSwipableItemStyle = (itemIndex) => {
     const {
-      distDrag,
       itemWidth,
       itemHeight,
+      rotateDegree,
       reduceScaleBy,
-      elastickRange,
+      reduceDegreeBy,
       reduceOpacityBy,
+      stackEffectHeight,
+      reduceTransformBy,
       elastickItemsCount,
     } = this.props;
 
     const isFirst = itemIndex === 0;
     const currentPan = isFirst ? this.panSwiping : this.pan;
 
-    const rotateRange = 8 - 8 / elastickItemsCount * itemIndex;
+    const rotateRange = rotateDegree * reduceDegreeBy ** itemIndex;
     const rotate = currentPan.x.interpolate({
-      inputRange: [-distDrag, 0, distDrag],
-      outputRange: [`-${rotateRange}deg`, '0deg', `${rotateRange}deg`],
+      inputRange: [-TRANSFORM_RANGE, 0, TRANSFORM_RANGE],
+      outputRange: [`${-rotateRange}deg`, '0deg', `${rotateRange}deg`],
     });
 
     const opacityRange = 1 - reduceOpacityBy * itemIndex;
@@ -188,15 +197,17 @@ export default class ElasticStack extends Component {
       outputRange: [scaleRange, scaleRange + reduceScaleBy],
     });
 
-    const elRange = isFirst ? 1 : elastickRange;
-    const translateRange = (1 - 1 / elastickItemsCount * itemIndex) * distDrag * elRange;
+    const translateRange = TRANSFORM_RANGE / 2 * reduceTransformBy ** itemIndex;
     const translateX = currentPan.x.interpolate({
-      inputRange: [-distDrag, 0, distDrag],
+      inputRange: [-TRANSFORM_RANGE, 0, TRANSFORM_RANGE],
       outputRange: [-translateRange, 0, translateRange],
     });
+
+    const scaledHeightDiff = (itemHeight - itemHeight * scaleRange) / 2;
+    const zeroRange = scaledHeightDiff + itemIndex * stackEffectHeight;
     const translateY = currentPan.y.interpolate({
-      inputRange: [-distDrag, 0, distDrag],
-      outputRange: [-translateRange, 0, translateRange],
+      inputRange: [-TRANSFORM_RANGE, 0, TRANSFORM_RANGE],
+      outputRange: [-translateRange + zeroRange, zeroRange, translateRange + zeroRange],
     });
 
     return {
@@ -206,7 +217,7 @@ export default class ElasticStack extends Component {
       position: 'absolute',
       backgroundColor: this.props.itemBackgroundColor,
       opacity,
-      transform: [{ scale }, { rotate }, { translateX }, { translateY }],
+      transform: [{ rotate }, { translateX }, { translateY }, { scale }],
     };
   };
 
@@ -248,14 +259,25 @@ export default class ElasticStack extends Component {
   };
 
   onPanResponderRelease = (e, data) => {
-    const { onSwipedTop, onSwipedLeft, onSwipedRight, onSwipedBottom, distDrag } = this.props;
+    const { directions } = this.state;
+    const {
+      distDrag,
+      itemHeight,
+      onSwipedTop,
+      onSwipedLeft,
+      onSwipedRight,
+      reduceScaleBy,
+      onSwipedBottom,
+      stackEffectHeight,
+      reduceTransformBy,
+    } = this.props;
     const animatedValueX = this.animatedValueX;
     const animatedValueY = this.animatedValueY;
 
-    const isSwipingLeft = animatedValueX < -distDrag && this.state.directions.left;
-    const isSwipingRight = animatedValueX > distDrag && this.state.directions.right;
-    const isSwipingTop = animatedValueY < -distDrag && this.state.directions.top;
-    const isSwipingBottom = animatedValueY > distDrag && this.state.directions.bottom;
+    const isSwipingLeft = animatedValueX < -distDrag && directions.left;
+    const isSwipingRight = animatedValueX > distDrag && directions.right;
+    const isSwipingTop = animatedValueY < -distDrag && directions.top;
+    const isSwipingBottom = animatedValueY > distDrag && directions.bottom;
 
     this.props.onPanResponderRelease(e, data);
 
@@ -270,11 +292,18 @@ export default class ElasticStack extends Component {
         onSwipeDirectionCallback = onSwipedTop;
       }
 
+      const itemIndex = 1;
+      const scaleRange = 1 - reduceScaleBy * itemIndex;
+      const translateRange = TRANSFORM_RANGE / 2 * reduceTransformBy ** itemIndex;
+      const scaledHeightDiff = (itemHeight - itemHeight * scaleRange) / 2;
+      const zeroRange = scaledHeightDiff + itemIndex * stackEffectHeight;
+      const percentage = translateRange / (translateRange + zeroRange);
+
       Animated.parallel([
         Animated.spring(this.scale, { toValue: 1 }),
         Animated.spring(this.opacity, { toValue: 1 }),
         Animated.spring(this.pan, {
-          toValue: { x: 0, y: 0 },
+          toValue: { x: 0, y: TRANSFORM_RANGE * (percentage - 1) - zeroRange },
         }),
         Animated.spring(this.panSwiping, {
           toValue: {
