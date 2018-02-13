@@ -78,6 +78,12 @@ onPanResponderRelease: PropTypes.func,
 
 All changes [here](./CHANGELOG.md)
 
+### 1.3.1 - 2018-02-13
+
+#### Fixed
+
+* replaced `**` with `Math.pow`
+
 ### 1.3.0 - 2018-02-11
 
 #### Added

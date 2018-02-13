@@ -179,7 +179,8 @@ export default class ElasticStack extends Component {
     const isFirst = itemIndex === 0;
     const currentPan = isFirst ? this.panSwiping : this.pan;
 
-    const rotateRange = rotateDegree * reduceDegreeBy ** itemIndex;
+    // eslint-disable-next-line no-restricted-properties
+    const rotateRange = rotateDegree * Math.pow(reduceDegreeBy, itemIndex);
     const rotate = currentPan.x.interpolate({
       inputRange: [-TRANSFORM_RANGE, 0, TRANSFORM_RANGE],
       outputRange: [`${-rotateRange}deg`, '0deg', `${rotateRange}deg`],
@@ -197,7 +198,8 @@ export default class ElasticStack extends Component {
       outputRange: [scaleRange, scaleRange + reduceScaleBy],
     });
 
-    const translateRange = TRANSFORM_RANGE / 2 * reduceTransformBy ** itemIndex;
+    // eslint-disable-next-line no-restricted-properties
+    const translateRange = TRANSFORM_RANGE / 2 * Math.pow(reduceTransformBy, itemIndex);
     const translateX = currentPan.x.interpolate({
       inputRange: [-TRANSFORM_RANGE, 0, TRANSFORM_RANGE],
       outputRange: [-translateRange, 0, translateRange],
@@ -292,11 +294,10 @@ export default class ElasticStack extends Component {
         onSwipeDirectionCallback = onSwipedTop;
       }
 
-      const itemIndex = 1;
-      const scaleRange = 1 - reduceScaleBy * itemIndex;
-      const translateRange = TRANSFORM_RANGE / 2 * reduceTransformBy ** itemIndex;
+      const scaleRange = 1 - reduceScaleBy;
+      const translateRange = TRANSFORM_RANGE / 2 * reduceTransformBy;
       const scaledHeightDiff = (itemHeight - itemHeight * scaleRange) / 2;
-      const zeroRange = scaledHeightDiff + itemIndex * stackEffectHeight;
+      const zeroRange = scaledHeightDiff + stackEffectHeight;
       const percentage = translateRange / (translateRange + zeroRange);
 
       Animated.parallel([
